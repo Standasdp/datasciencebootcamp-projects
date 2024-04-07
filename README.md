@@ -13,5 +13,5 @@ All my project in the bootcamp. There are 10 sprints as follow.
 - Python for Data Analyst
 - Dashboard
 
-Verified Badge : [Link]([url](https://api.badgr.io/public/assertions/gz-UhI64QvOhM2QMqSZvWQ?identity__email=standasdp%40gmail.com))
+Verified Badge : [https://api.badgr.io/public/assertions/gz-UhI64QvOhM2QMqSZvWQ?identity__email=standasdp%40gmail.com](url)
 
