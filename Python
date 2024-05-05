@@ -1,2 +1,241 @@
+# Bank Marketing Data
+# Comparison 4 Model 
+- Decision Tree
+- KNN
+- Random Forest
+- Logistic Regression
+  
+# And find the best fit model with Bank Marketing Data
 
-r
+
+# Data Source
+# : https://data.world/data-society/bank-marketing-data  > Web
+# : https://query.data.world/s/rnbgubt3qipqdp6clquekdof3ltjar?dws=00000  > Load now
+
+
+
+from numpy import ndarray
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import pandas as pd
+import numpy as np
+
+df = pd.read_excel('Bank.xlsx')
+
+df.head()
+df.info()
+
+
+## Factorizing
+# Unique value Job
+df['job'].value_counts()
+
+
+# Factorizing Job
+df['job_id'] = df['job'].map( {'management': '1', 'blue-collar': '2',\
+                'technician': '3', 'admin.': '4',\
+                'services': '5', 'retired': '6',\
+                'self-employed': '7', 'entrepreneur': '8',\
+                'unemployed': '9', 'housemaid': '10',\
+                'student': '11', 'unknown': '12'} )
+df
+
+
+# Unique value Marital
+df['marital'].value_counts()
+
+# Factorizing Marital
+df['marital_id'] = df['marital'].map( {'married': '1', 'single': '2',\
+                'divorced': '3', 'unknown': '4'} )
+df
+
+
+
+# Unique value Education
+df['education'].value_counts()
+
+# Factorizing Education
+df['education_id'] = df['education'].map( {'primary': '1', 'secondary': '2',\
+                'tertiary': '3', 'unknown': '4'} )
+df
+
+
+
+# Unique value default
+df['default'].value_counts()
+
+# Factorizing Default
+df['default_id'] = df['default'].map( {'yes': '1', 'no': '0'} )
+df
+
+
+# Unique value Housing
+df['housing'].value_counts()
+
+# Factorizing Housing
+df['housing_id'] = df['housing'].map( {'yes': '1', 'no': '0'} )
+df
+
+
+# Unique value loan
+df['loan'].value_counts()
+
+# Factorizing loan
+df['loan_id'] = df['loan'].map( {'yes': '1', 'no': '0'} )
+df
+
+
+# Unique value contact
+df['contact'].value_counts()
+
+# Factorizing contact
+df['contact_id'] = df['contact'].map( {'cellular': '1', 'telephone': '2', 'unknown': '3'} )
+df
+
+
+# Unique value month
+df['month'].value_counts()
+
+# Factorizing month
+df['month_id'] = df['month'].map( {'jan': '1', 'feb': '2', 'mar': '3', 'apr': '4', 'may': '5', 'jun': '6',\
+                                   'jul': '7', 'aug': '8', 'sep': '9', 'oct': '10', 'nov': '11', 'dec': '12'} )
+df
+
+
+# Unique value poutcome
+df['poutcome'].value_counts()
+
+# Factorizing poutcome
+df['poutcome_id'] = df['poutcome'].map( {'failure': '0', 'success': '1', 'unknown': '2', 'other': '3'} )
+df
+
+
+# Unique value y
+df['y'].value_counts()
+
+# Factorizing y
+df['subscribed_id'] = df['y'].map( {'no': '0', 'yes': '1'} )
+df
+
+
+
+## Prep Model
+
+# 1. split
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, ConfusionMatrixDisplay
+
+
+features = ["age", "job_id", "marital_id", "education_id", "default_id", "balance", "housing_id", "loan_id"]
+X = df[features]
+y = df["subscribed_id"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42) # random_state เสมือน R set.seed()
+
+
+## Decision Tree
+from sklearn.tree import DecisionTreeClassifier
+import matplotlib.pyplot as plt
+
+# 2. train model
+tree_model = DecisionTreeClassifier() #DecisionTreeClassifier(max_depth = 5, random_state = 42)
+tree_model.fit(X_train, y_train)
+
+# Tree Text-based Diagram
+from sklearn.tree import export_text
+
+tree_rules = export_text(tree_model, feature_names = features)
+print(tree_rules)
+
+# Tree Diagram
+from sklearn import tree
+
+tree.plot_tree(tree_model, feature_names = features)
+
+# 3. test model / scoring
+tree_pred = tree_model.predict(X_test)
+
+# 4. evaluation
+tree_metrics = metrics.classification_report(y_test, tree_pred)
+tree_accuracy = accuracy_score(y_test, tree_pred)
+print(tree_metrics)
+
+
+## KNN
+
+# 2. train model
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+sc_X_train = sc.fit_transform(X_train)
+sc_X_test = sc.transform(X_test)
+
+from sklearn.neighbors import KNeighborsClassifier
+knn_model = KNeighborsClassifier()#(n_neighbors = 5, metric = 'minkowski', p = 2)
+knn_model.fit(sc_X_train, y_train)
+
+# 3. test model / scoring
+knn_pred = knn_model.predict(sc_X_test)
+
+# 4. evaluation
+knn_metrics = metrics.classification_report(y_test, knn_pred)
+knn_accuracy = accuracy_score(y_test, knn_pred)
+print(knn_metrics)
+
+
+
+## Random Forest
+
+# 2. train model
+from sklearn.ensemble import RandomForestClassifier
+
+rf_model = RandomForestClassifier()
+rf_model.fit(X_train, y_train)
+
+# 3. test model / scoring
+rf_pred = rf_model.predict(X_test)
+
+# 4. evaluation
+rf_metrics = metrics.classification_report(y_test, rf_pred)
+rf_accuracy = accuracy_score(y_test, rf_pred)
+print(rf_metrics)
+
+
+
+## Logistic Regression
+
+# 2. train model
+from sklearn.linear_model import LogisticRegression
+
+lr_model = LogisticRegression()
+lr_model.fit(X_train, y_train)
+
+# 3. test model / scoring
+lr_pred = lr_model.predict(X_test)
+
+# 4. evaluation
+lr_metrics = metrics.classification_report(y_test, lr_pred)
+lr_accuracy = accuracy_score(y_test, lr_pred)
+print(lr_metrics)
+
+
+
+## Compare Model
+
+print(f"Decition Tree accuracy: {tree_accuracy}")
+print(f"KNN accuracy: {knn_accuracy}")
+print(f"Random Forest accuracy: {rf_accuracy}")
+print(f"Logistic Regression accuracy: {lr_accuracy}")
+
+
+
+### Conclusion
+
+### The best fit model with Bank Marketing Data is Logistic Regression. 
+### The accuracy is highest at 0.8917.
+
+
